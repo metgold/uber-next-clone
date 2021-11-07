@@ -11,7 +11,7 @@ mapboxgl.accessToken =
         const map = new mapboxgl.Map({
             container: "map",
             style: 'mapbox://styles/drakosi/ckvcwq3rwdw4314o3i2ho8tph',
-            center: [9.0820, 8.6753],
+            center: [9.0765, 7.3986],
             zoom: 3,
         });
             if(props.pickupCoordinates) {

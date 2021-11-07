@@ -1,13 +1,29 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Head from 'next/head'
 import Image from 'next/image'
 import tw from "tailwind-styled-components"
 import Map from './components/Map'
 import Link from 'next/link'
+import { auth } from '../firebase'
+import { onAuthStateChanged, signOut } from '@firebase/auth'
+import { useRouter } from 'next/router'
 
 export default function Home() {
-  
-
+  const [user, setUser] = useState(null)
+  const router = useRouter()
+  useEffect(() => {
+      return onAuthStateChanged(auth, user => {
+        if (user) {
+          setUser({
+            name: user.displayName,
+            photoUrl: user.photoURL,
+          })
+        } else {
+          setUser(null)
+          router.push('/login')
+        }
+      })
+  }, [router])
   return (
     <Wrapper>
       <Map/>
@@ -15,8 +31,8 @@ export default function Home() {
         <Header>
           <UberLogo src="https://i.ibb.co/84stgjq/uber-technologies-new-20218114.jpg"/>
           <Profile>
-            <Name>Olaoye Dhikrullah</Name>
-            <UserImage src="https://scontent.fabv2-1.fna.fbcdn.net/v/t1.6435-9/66124494_2274922052622535_6640114513012064256_n.jpg?_nc_cat=108&ccb=1-5&_nc_sid=09cbfe&_nc_eui2=AeEd10tn3jCPE2OhJWHFJsrJbONjLQyEUq9s42MtDIRSr2UjnF8H9aw8dOBNKtmKFFjPexK-6yqyl_Km5s-7btMF&_nc_ohc=6pPa1ciPqYwAX8LjVsJ&_nc_ht=scontent.fabv2-1.fna&oh=1fe1a4070ca439401b2ffc5ecbe64360&oe=61AC575B" />
+            <Name>{user && user.name}</Name>
+            <UserImage src={user && user.photoUrl} onClick={() => signOut(auth)} />
           </Profile>
         </Header>
         <ActionButtons>
@@ -60,7 +76,7 @@ const Name = tw.div`
   mr-4 w-20 text-sm
 `
 const UserImage = tw.img`
-  h-12 w-12 rounded-full border border-gray-200 p-px
+  h-12 w-12 rounded-full border border-gray-200 p-px cursor-pointer
 `
 const ActionButtons = tw.div`
   flex
